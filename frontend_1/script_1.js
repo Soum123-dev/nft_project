@@ -1,87 +1,89 @@
-// Écouter la soumission du formulaire pour l'INE
-document.getElementById('ine-form').addEventListener('submit', async function(event) {
-    event.preventDefault();  // Empêcher le comportement par défaut de la soumission du formulaire
-  
-    const submitButton = document.querySelector('button[type="submit"]');
-    submitButton.disabled = true;  // Désactiver le bouton d'envoi pour éviter les soumissions multiples
-  
-    // Récupérer les données du formulaire
-    const formData = new FormData(event.target);
-    const data = Object.fromEntries(formData.entries());
-
-    // Vérification du format du numéro INE : il doit commencer par "N" ou "n" suivi de chiffres
-    if (!/^N\d+$/i.test(data['ineNumber'])) {
-        alert('Le numéro INE doit commencer par la lettre "N" ou "n" suivie de chiffres.');
-        submitButton.disabled = false;  // Réactiver le bouton d'envoi
-        return;  // Arrêter l'exécution du code
+// Initialisation de QuaggaJS
+Quagga.init({
+    inputStream: {
+        type: "live",
+        target: document.querySelector('#video')
+    },
+    decoder: {
+        readers: ["code_128_reader"]
     }
-  
-    try {
-        // Envoi des données au backend pour vérification via une requête POST
-        const response = await fetch('/api/verifyStudentInfo', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)  // Convertir les données en JSON pour les envoyer au serveur
-        });
-  
-        if (response.ok) {
-            const responseData = await response.json();  // Extraire la réponse JSON du serveur
-            alert(responseData.message);  // Afficher le message de succès retourné par le backend
-            
-            // Afficher le second formulaire après la vérification réussie de l'INE
-            document.getElementById('ine-form').style.display = 'none';
-            document.getElementById('verification-form').style.display = 'block';
-        } else {
-            // Gérer les erreurs renvoyées par le serveur
-            alert('Une erreur est survenue lors de la soumission.');
-            console.error('Erreur de réponse du serveur:', await response.text());
-        }
-    } catch (error) {
-        // Gérer les erreurs réseau ou autres problèmes non liés à la réponse du serveur
-        console.error('Erreur:', error);
-        alert('Une erreur s\'est produite lors de la soumission.');
-    } finally {
-        submitButton.disabled = false;  // Réactiver le bouton d'envoi après le traitement
+}, function(err) {
+    if (err) {
+        console.error(err);
+        return;
+    }
+    Quagga.start();
+});
+
+// Événement déclenché lorsqu'un code QR est détecté
+Quagga.onDetected(function(result) {
+    // Extraire les données du QR code (exemple : JSON)
+    const data = JSON.parse(result.codeResult.code);
+
+    // Validation basique des données (ajoutez vos propres règles de validation)
+    if (!data.nom || !data.ine) {
+        alert('Données du QR code incomplètes');
+        return;
+    }
+
+    // ... (votre code QuaggaJS existant)
+
+// Sélectionner le premier formulaire et le deuxième formulaire
+const premierFormulaire = document.getElementById('ine-form');
+const secondFormulaire = document.getElementById('verification-form');
+
+// Écouter l'événement de soumission du premier formulaire
+premierFormulaire.addEventListener('submit', (event) => {
+    event.preventDefault(); // Empêche le rechargement de la page
+
+    // Récupérer les données du formulaire (à adapter en fonction de votre structure)
+    const nom = document.getElementById('student-name').value;
+    const ine = document.getElementById('ine-number').value;
+    // ...
+
+    // Validation des données (à adapter en fonction de vos besoins)
+    if (!nom || !ine) {
+        alert('Veuillez remplir tous les champs obligatoires');
+        return;
+    }
+
+    // Envoyer les données au serveur pour vérification (si nécessaire)
+    // ...
+
+    // Si les données sont valides (simuler ici pour l'exemple)
+    if (true) { // Remplacer par votre logique de validation
+        // Afficher le deuxième formulaire et masquer le premier
+        secondFormulaire.style.display = 'block';
+        premierFormulaire.style.display = 'none';
+    } else {
+        alert('Les données sont invalides');
     }
 });
 
-// Gestion de la soumission du second formulaire
-document.getElementById('verification-form').addEventListener('submit', async function(event) {
-    event.preventDefault();  // Empêcher la soumission par défaut du formulaire
-
-    const submitButton = document.querySelector('#verification-form button[type="submit"]');
-    submitButton.disabled = true;  // Désactiver le bouton d'envoi pour éviter les soumissions multiples
-
-    // Récupérer les données du formulaire
-    const formData = new FormData(event.target);
-    const data = Object.fromEntries(formData.entries());
-
-    try {
-        // Envoi des données au backend pour générer le NFT via une requête POST
-        const response = await fetch('/generate-nft', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)  // Convertir les données en JSON pour les envoyer au serveur
-        });
-
-        if (response.ok) {
-            const responseData = await response.json();  // Extraire la réponse JSON du serveur
-            alert('NFT généré avec succès. Un email de confirmation vous a été envoyé.');
-            // Réinitialiser les formulaires ou rediriger si nécessaire
+    // Envoyer les données au backend (avec protection CSRF, à adapter)
+    fetch('/verifier', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken // Remplacer par votre token CSRF
+        },
+        body: JSON.stringify({
+            formData: data
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.valide) {
+            // Afficher le deuxième formulaire et un message de succès
+            document.getElementById('verification-form').style.display = 'block';
+            document.getElementById('result').innerHTML = 'Informations valides !';
         } else {
-            // Gérer les erreurs renvoyées par le serveur
-            alert('Une erreur est survenue lors de la génération du NFT.');
-            console.error('Erreur de réponse du serveur:', await response.text());
+            // Afficher un message d'erreur
+            document.getElementById('result').innerHTML = 'Erreur : Les informations ne sont pas valides.';
         }
-    } catch (error) {
-        // Gérer les erreurs réseau ou autres problèmes non liés à la réponse du serveur
+    })
+    .catch(error => {
         console.error('Erreur:', error);
-        alert('Une erreur s\'est produite lors de la génération du NFT.');
-    } finally {
-        submitButton.disabled = false;  // Réactiver le bouton d'envoi après le traitement
-    }
+        document.getElementById('result').innerHTML = 'Une erreur s\'est produite.';
+    });
 });
