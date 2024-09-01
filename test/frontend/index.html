@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification par QR Code</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <script src="script.js"></script>
+</head>
+<body>
+
+<form id="ine-form">
+    <fieldset>
+        <legend>Identité</legend>
+        <label for="student-name">Nom & Prénom:</label>
+        <input type="text" id="student-name" name="student-name" required>
+
+        <label for="ine-number">Numéro INE:</label>
+        <input type="text" id="ine-number" name="ineNumber" placeholder="NXXXXXXXXXX" required>
+
+        <label for="parcours-academique">Parcours:</label>
+            <select id="parcours-academique" name="parcours-academique" required>
+                <option value="" disabled selected>-- Sélectionnez votre parcours --</option>
+                <option value="genie-logiciel-pure-developer">Génie logiciel/Pure Developer</option>
+                <option value="master-cybersecurite">Master Cybersécurité</option>
+                <option value="master-fouilles-donnees-IA">Master Fouilles de Données et IA</option>
+                <option value="physique-ingenierie-energie">Physique et Ingénierie de l’Énergie</option>
+                <option value="mathematiques-informatique">Mathématiques-Informatique</option>
+                <option value="hygiene-securite-alimentaire">Hygiène et Sécurité Alimentaire</option>
+                <option value="geomatique">Géomatique</option>
+                <option value="master-e-sante-telemedecine">Master e-Santé et Télémédecine</option>
+                <option value="master-technologies-education">Master Technologies de l’Éducation</option>
+            </select>
+
+            <label for="etudiant-status">Statut:</label>
+            <select name="etudiant-status" id="etudiant-status" required>
+                <option value="" disabled selected>--Votre qualificatif--</option>
+                <option value="non-salarie">Non Salarié</option>
+                <option value="salarie">Salarié</option>
+            </select><br><br>
+
+            <label for="year">Année Académique:</label>
+            <input type="text" id="year" name="annee" placeholder="AAAA-AAAA" pattern="\d{4}-\d{4}" title="L'année académique doit être au format 'AAAA-AAAA'" required>
+
+            <label for="Date of birth">Naissance:</label>
+            <input type="date" id="Date of birth" name="date-de-naissance" required>
+
+        <label for="qr-code">Scannez le QR Code:</label>
+        <div id="qr-reader" style="width: 300px;"></div>
+        <button type="submit" id="submit-button" >Soumettre</button>
+        <button type="reset"  id="reset-button" >Annuler</button>
+    </fieldset>
+</form>
+
+<form id="second-form" style="display: none;">
+    <fieldset>
+        <legend>Informations supplémentaires</legend>
+        <label for="additional-info">Autres informations:</label>
+        <label for="verify-name">Nom:</label>
+        <input type="text" id="verify-name" name="verify-name" required>
+    
+        <label for="verify-prenom">Prénom:</label>
+        <input type="text" id="verify-prenom" name="verify-prenom" required>
+
+        <label for="verify-ine">Numéro INE:</label>
+        <input type="text" id="verify-ine" name="verify-ine" required>
+
+        <label for="verify-year">Année en Cours:</label>
+        <input type="text" id="verify-year" name="verify-year" required>
+    
+        <button type="submit">Générer le NFT</button>
+    </fieldset>
+</form>
+
+</body>
+</html>

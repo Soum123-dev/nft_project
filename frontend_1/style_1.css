@@ -78,7 +78,7 @@ button:hover {
     }
 }
 
-verification-form {
+second-form {
     /* Styles spécifiques au second formulaire */
     display: none; /* Par défaut, ce formulaire est masqué */
 }

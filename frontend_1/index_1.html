@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Informations sur l'Étudiant</title>
-    <link rel="stylesheet" href="style_1.css">
+    <title>Informations de l'Etudiant</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="html5-qrcode.min.js"></script>
+    
 </head>
 <body>
-
-    <!-- Formulaire existant pour la saisie initiale des informations -->
     <form id="ine-form">
-        <fieldset>
-            <legend>Identité</legend>
+    <fieldset>
+        <legend>Identité</legend>
+        <label for="student-name">Nom & Prénom:</label>
+        <input type="text" id="student-name" name="student-name" required>
 
-            <label for="student-name">Nom & Prénom:</label>
-            <input type="text" id="student-name" name="student-name" required>
+        <label for="ine-number">Numéro INE:</label>
+        <input type="text" id="ine-number" name="ineNumber" placeholder="NXXXXXXXXXX" required>
 
-            <label for="ine-number">Numéro INE:</label>
-            <input type="text" placeholder="NXXXXXXXXXX" id="ine-number" name="ineNumber" pattern="N\d+" title="Le numéro INE doit commencer par 'N' suivi de chiffres" required>
-
-            <label for="parcours-academique">Parcours:</label>
+        <label for="parcours-academique">Parcours:</label>
             <select id="parcours-academique" name="parcours-academique" required>
                 <option value="" disabled selected>-- Sélectionnez votre parcours --</option>
                 <option value="genie-logiciel-pure-developer">Génie logiciel/Pure Developer</option>
@@ -36,7 +36,7 @@
             <label for="etudiant-status">Statut:</label>
             <select name="etudiant-status" id="etudiant-status" required>
                 <option value="" disabled selected>--Votre qualificatif--</option>
-                <option value="non-salarie">Non Salarié</option>
+                <option value="non-salarie">Etudiant</option>
                 <option value="salarie">Salarié</option>
             </select><br><br>
 
@@ -46,18 +46,17 @@
             <label for="Date of birth">Naissance:</label>
             <input type="date" id="Date of birth" name="date-de-naissance" required>
 
-            <video id="video" width="320" height="240"></video>
-            <button id="startScanButton">Démarrer le scan</button>
-            <div id="scanZone" class="scan-zone">
-            <p>Placez le code QR dans cette zone</p>
-            </div>
+            <label for="qr-code">CARTE ETUDIANT:</label>
+            <div style="width: 500px" id="reader"></div>
+            
 
-            <button type="submit">Soumettre</button>
-            <button type="reset">Annuler</button>
-        </fieldset>
+        <button type="submit" id="submit-button" >Soumettre</button>
+        <button type="reset"  id="reset-button" >Annuler</button>
+
+    </fieldset>
     </form>
 
-    <!-- Nouveau formulaire à afficher après vérification -->
+
     <form id="verification-form" style="display:none;">
         <fieldset>
             <legend>Vérification des Informations</legend>
@@ -78,6 +77,80 @@
         </fieldset>
     </form>
 
-    <script src="script_1.js"></script>
+
+
+    <script>
+
+        function onScanSuccess(decodedText, decodedResult) {
+            // Handle on success condition with the decoded text or result.
+            console.log(`Scan result: ${decodedText}`, decodedResult);
+
+            html5QrcodeScanner.clear();
+        }
+
+        function onScanError(errorMessage) {
+            // handle on error condition, with error message
+        }
+        
+        var html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+
+        // Cette fonction sera appelée lorsque le QR code est scanné avec succès
+        async function onScanSuccess(decodedText, decodedResult) {
+            console.log(`Code QR scanné: ${decodedText}`);
+        
+            try {
+                // Vérifier si decodedText est une URL
+                if (!isValidUrl(decodedText)) {
+                    throw new Error('Le code QR ne contient pas une URL valide.');
+                }
+        
+                const response = await fetch(decodedText);
+        
+                if (!response.ok) {
+                    throw new Error(`Erreur du serveur: ${response.status} ${response.statusText}`);
+                }
+        
+                const qrData = await response.json();
+        
+                // Ajouter des vérifications sur les données reçues
+                if (!qrData.name || !qrData.birthDate || !qrData.ineNumber || !qrData.academicYear) {
+                    throw new Error('Les données récupérées sont incomplètes.');
+                }
+        
+                // Récupérer les informations saisies par l'utilisateur
+                const formData = new FormData(document.getElementById('ine-form'));
+                const data = Object.fromEntries(formData.entries());
+        
+                // Vérifier que les informations correspondent
+                if (data['student-name'] === qrData.name &&
+                    data['date-de-naissance'] === qrData.birthDate &&
+                    data['ineNumber'] === qrData.ineNumber &&
+                    data['annee'] === qrData.academicYear) {
+        
+                    alert('Les informations sont correctes !');
+                    document.getElementById('second-form').style.display = 'block';
+                } else {
+                    alert('Les informations ne correspondent pas. Veuillez réessayer.');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert(`Une erreur s'est produite: ${error.message}`);
+            }
+        }
+        
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+        
+
+</script>
+
 </body>
 </html>
