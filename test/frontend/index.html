@@ -3,23 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vérification par QR Code</title>
+    <title>Informations de l'Etudiant</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
-    <script src="script.js"></script>
+    <script src="html5-qrcode.min.js"></script>
 </head>
 <body>
+    <form id="http://localhost/nft_project/TEST/backend/server.php">
+        <fieldset>
+            <legend>Identité</legend>
+            <label for="student-name">Nom & Prénom:</label>
+            <input type="text" id="student-name" name="student-name" required>
 
-<form id="ine-form">
-    <fieldset>
-        <legend>Identité</legend>
-        <label for="student-name">Nom & Prénom:</label>
-        <input type="text" id="student-name" name="student-name" required>
+            <label for="ine-number">INE:</label>
+            <input type="text" id="ine-number" name="ineNumber" placeholder="NXXXXXXXXXX" required>
 
-        <label for="ine-number">Numéro INE:</label>
-        <input type="text" id="ine-number" name="ineNumber" placeholder="NXXXXXXXXXX" required>
+            <label for="sexe">Sexe:</label>
+            <select id="sexe" name="sexe" required>
+                <option value="">--Sélectionnez--</option>
+                <option value="masculin">Masculin</option>
+                <option value="feminin">Féminin</option>
+            </select><br><br>
 
-        <label for="parcours-academique">Parcours:</label>
+            <label for="nationalite">Nationalité:</label>
+            <select id="nationalite" name="nationalite" required>
+                <option value="">Sélectionnez un pays</option>
+                <option value="BJ">Bénin</option>
+                <option value="BF">Burkina Faso</option>
+                <option value="CV">Cap-Vert</option>
+                <option value="CI">Côte d'Ivoire</option>
+                <option value="GM">Gambie</option>
+                <option value="GH">Ghana</option>
+                <option value="GN">Guinée</option>
+                <option value="GW">Guinée-Bissau</option>
+                <option value="LR">Liberia</option>
+                <option value="ML">Mali</option>
+                <option value="MR">Mauritanie</option>
+                <option value="NE">Niger</option>
+                <option value="NG">Nigéria</option>
+                <option value="SN">Sénégal</option>
+                <option value="SL">Sierra Leone</option>
+                <option value="TG">Togo</option>
+            </select><br>
+
+            <label for="parcours-academique">Parcours:</label>
             <select id="parcours-academique" name="parcours-academique" required>
                 <option value="" disabled selected>-- Sélectionnez votre parcours --</option>
                 <option value="genie-logiciel-pure-developer">Génie logiciel/Pure Developer</option>
@@ -36,7 +62,7 @@
             <label for="etudiant-status">Statut:</label>
             <select name="etudiant-status" id="etudiant-status" required>
                 <option value="" disabled selected>--Votre qualificatif--</option>
-                <option value="non-salarie">Non Salarié</option>
+                <option value="non-salarie">Etudiant</option>
                 <option value="salarie">Salarié</option>
             </select><br><br>
 
@@ -46,32 +72,66 @@
             <label for="Date of birth">Naissance:</label>
             <input type="date" id="Date of birth" name="date-de-naissance" required>
 
-        <label for="qr-code">Scannez le QR Code:</label>
-        <div id="qr-reader" style="width: 300px;"></div>
-        <button type="submit" id="submit-button" >Soumettre</button>
-        <button type="reset"  id="reset-button" >Annuler</button>
-    </fieldset>
-</form>
+            <label for="qr-code">CARTE ETUDIANT:</label>
+            <div style="width: 500px" id="reader"></div>
 
-<form id="second-form" style="display: none;">
-    <fieldset>
-        <legend>Informations supplémentaires</legend>
-        <label for="additional-info">Autres informations:</label>
-        <label for="verify-name">Nom:</label>
-        <input type="text" id="verify-name" name="verify-name" required>
-    
-        <label for="verify-prenom">Prénom:</label>
-        <input type="text" id="verify-prenom" name="verify-prenom" required>
+            <button type="submit" id="submit-button">Soumettre</button>
+            <button type="reset" id="reset-button">Annuler</button>
+        </fieldset>
+    </form>
 
-        <label for="verify-ine">Numéro INE:</label>
-        <input type="text" id="verify-ine" name="verify-ine" required>
+    <form id="verification-form" style="display:none;">
+        <fieldset>
+            <legend>Vérification des Informations</legend>
+            <label for="verify-name">Nom:</label>
+            <input type="text" id="verify-name" name="verify-name" required>
 
-        <label for="verify-year">Année en Cours:</label>
-        <input type="text" id="verify-year" name="verify-year" required>
-    
-        <button type="submit">Générer le NFT</button>
-    </fieldset>
-</form>
+            <label for="verify-prenom">Prénom:</label>
+            <input type="text" id="verify-prenom" name="verify-prenom" required>
 
+            <label for="verify-ine">Numéro INE:</label>
+            <input type="text" id="verify-ine" name="verify-ine" required>
+
+            <label for="verify-year">Année en Cours:</label>
+            <input type="text" id="verify-year" name="verify-year" required>
+
+            <button type="submit">Vérifier et Générer NFT</button>
+        </fieldset>
+    </form>
+
+    <script>
+        var html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+
+        async function onScanSuccess(decodedText) {
+            console.log(`Code QR scanné: ${decodedText}`);
+
+            // Récupérer les informations du formulaire
+            const formData = new FormData(document.getElementById('http://localhost/nft_project/TEST/backend/server.php'));
+            const data = {
+                studentName: formData.get('student-name'),
+                //ineNumber: formData.get('ineNumber'),
+                //dateOfBirth: formData.get('date-de-naissance'),
+                //academicYear: formData.get('annee'),
+                qrUrl: decodedText // URL obtenue du code QR
+            };
+
+            // Envoyer les données au serveur PHP pour vérification
+            const response = await fetch('http://localhost/nft_project/TEST/backend/server.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Les informations sont correctes !');
+                document.getElementById('verification-form').style.display = 'block';
+            } else {
+                alert('Les informations ne correspondent pas. Veuillez réessayer.');
+            }
+        }
+    </script>
 </body>
 </html>
