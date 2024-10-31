@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINTING-NFT</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url("{% static 'images/mint.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #343a40;
+            margin-bottom: 30px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 10px rgba(0, 86, 179, 0.7);
+        }
+        .btn:active {
+            background-color: #003f7f;
+            box-shadow: 0 0 15px rgba(0, 63, 127, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bienvenue sur la plateforme NFT</h1>
+        <a href="{% url 'student_info' %}" class="btn">Accéder au formulaire</a>
+    </div>
+</body>
+</html>

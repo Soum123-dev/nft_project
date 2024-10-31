@@ -1,0 +1,276 @@
+<!-- nft_app/templates/student_form.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INFORMATION DE L'ÉTUDIANT</title>
+    
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <script src="{% static 'html5-qrcode.min.js' %}"></script>
+    <script src="{% static 'script.js' %}"></script>
+
+</head>
+<body>
+    <!-- Formulaire principal pour les informations de l'étudiant -->
+    <form id="student-info-form" method="post" "action="{% url 'student_info' %}>
+        {% csrf_token %}
+        <fieldset>
+            <legend>IDENTITE DE L'ETUDIANT</legend>
+            <p>Veuillez remplir en lettres capitales (majuscule)</p> <br>
+            
+            <label for="student-name">Nom et Prénom(s) :</label>
+            <input type="text" id="student-name" name="student-name" placeholder="JOHN DOE" required><br>
+
+            <label for="university">Université :</label>
+            <input type="text" id="university" name="university" required><br>
+
+            <label for="uniteFormation">UFR :</label>
+            <select id="uniteFormation" name="uniteFormation" required>
+                <option value="" disabled selected>-- Sélectionnez votre parcours --</option>
+                <option value="sciences-du-numerique">PROGRAMME SCIENCES DU NUMERIQUE</option>
+                <option value="sciences-fondamentales">PROGRAMME SCIENCES FONDAMENTALES</option>
+                <option value="sciences-transversales">PROGRAMME TRANSVERSALES</option>
+            </select><br>
+
+            <label for="filiere">Filière :</label>
+            <select id="filiere" name="filiere" required>
+                <option value="" disabled selected>-- Sélectionnez votre parcours --</option>
+                <option value="genie-logiciel">LICENCE GENIE LOGICIEL</option>
+                <option value="chimie">LICENCE CHIMIE</option>
+                <option value="svt">LICENCE SVT/AGRO-ALIMENTAIRE</option>
+            </select><br>
+
+            <label for="niveau">Niveau :</label>
+            <select id="niveau" name="niveau" required>
+                <option value="" disabled selected>-- Sélectionnez votre niveau --</option>
+                <option value="licence1">Licence 1</option>
+                <option value="licence2">Licence 2</option>
+                <option value="licence3">Licence 3</option>
+            </select><br>
+<!--
+            <label for="domain">Domaine :</label>
+            <input type="text" id="domain" name="domain"><br>
+
+            <label for="mention">Mention :</label>
+            <input type="text" id="mention" name="mention"><br><br>
+
+            <label for="speciality">Spécialité :</label>
+            <input type="text" id="speciality" name="speciality"><br><br>
+        -->
+            <label for="qr-code">SCAN DE LA CARTE ETUDIANT :</label>
+            <div style="width: 500px" id="reader"></div><br>
+
+            <!-- <button type="button" id="submit-button">Soumettre</button>
+            <button type="reset" id="reset-button">Annuler</button> -->
+        </fieldset>
+    </form>
+
+    <!-- Deuxième formulaire pour la génération du NFT, caché par défaut -->
+    <form id="studentNFT-form" style="display:none;" method="post" action="{% url 'generate_nft' %}">
+        {% csrf_token %}
+        <fieldset>
+            <legend>Génération-Émission du NFT</legend>
+            <label for="verify-name">Nom :</label>
+            <input type="text" id="verify-name" name="verify-name" required><br><br>
+
+            <label for="verify-prenom">Prénom :</label>
+            <input type="text" id="verify-prenom" name="verify-prenom" required><br><br>
+
+            <label for="verify-ine">Numéro INE :</label>
+            <input type="text" id="verify-ine" name="verify-ine" required><br><br>
+
+            <!-- Adresse wallet -->
+            <label for="wallet-address">Adresse Wallet:</label>
+            <input type="text" id="wallet-address" name="wallet-address" required><br><br>
+
+            <button type="submit">CLIQUEZ ICI POUR GENERER UN NFT</button>
+        </fieldset>
+    </form>
+
+    <script>
+        // Initialiser le scanner de code QR
+        var html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+
+        // Fonction appelée lors de la réussite du scan du QR code
+        function onScanSuccess(decodedText) {
+            console.log(`Code QR scanné: ${decodedText}`);
+            alert('Les informations sont correctes !');
+            document.getElementById('studentNFT-form').style.display = 'block';
+        }
+
+        // Fonction pour soumettre le formulaire principal
+        document.getElementById('submit-button').addEventListener('click', function () {
+            document.getElementById('studentNFT-form').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
+
+
+deuxième modification
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INFORMATION DE L'ÉTUDIANT</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <script src="{% static 'html5-qrcode.min.js' %}"></script>
+    <script src="{% static 'script.js' %}"></script>
+</head>
+<body>
+    <!-- Formulaire principal pour les informations de l'étudiant -->
+    <form id="student-info-form" method="post" action="{% url 'student_info' %}">
+        {% csrf_token %}
+        <fieldset>
+            <legend>IDENTITE DE L'ETUDIANT</legend>
+            <p>Veuillez remplir en lettres capitales (majuscule)</p>
+            <br>
+            <label for="student-name">Nom et Prénom(s) :</label>
+            <input type="text" id="student-name" name="student-name" placeholder="JOHN DOE" required><br>
+            <label for="university">Université :</label>
+            <input type="text" id="university" name="university" required><br>
+            <label for="uniteFormation">UFR :</label>
+            <select id="uniteFormation" name="uniteFormation" required>
+                <option value="" disabled selected>-- Sélectionnez votre parcours --</option>
+                <option value="sciences-du-numerique">PROGRAMME SCIENCES DU NUMERIQUE</option>
+                <option value="sciences-fondamentales">PROGRAMME SCIENCES FONDAMENTALES</option>
+                <option value="sciences-transversales">PROGRAMME TRANSVERSALES</option>
+            </select><br>
+            <label for="filiere">Filière :</label>
+            <select id="filiere" name="filiere" required>
+                <option value="" disabled selected>-- Sélectionnez votre parcours --</option>
+                <option value="genie-logiciel">LICENCE GENIE LOGICIEL</option>
+                <option value="chimie">LICENCE CHIMIE</option>
+                <option value="svt">LICENCE SVT/AGRO-ALIMENTAIRE</option>
+            </select><br>
+            <label for="niveau">Niveau :</label>
+            <select id="niveau" name="niveau" required>
+                <option value="" disabled selected>-- Sélectionnez votre niveau --</option>
+                <option value="licence1">Licence 1</option>
+                <option value="licence2">Licence 2</option>
+                <option value="licence3">Licence 3</option>
+            </select><br>
+            <label for="qr-code">SCAN DE LA CARTE ETUDIANT :</label>
+            <div style="width: 500px" id="reader"></div><br>
+            <button type="submit" id="submit-button">Soumettre</button>
+            <button type="reset" id="reset-button">Annuler</button>
+        </fieldset>
+    </form>
+
+    <!-- Deuxième formulaire pour la génération du NFT, caché par défaut -->
+    <form id="studentNFT-form" style="display:none;" method="post" action="{% url 'generate_nft' %}" target="_blank">
+        {% csrf_token %}
+        <fieldset>
+            <legend>Génération-Émission du NFT</legend>
+            <label for="verify-name">Nom :</label>
+            <input type="text" id="verify-name" name="verify-name" required><br><br>
+            <label for="verify-prenom">Prénom :</label>
+            <input type="text" id="verify-prenom" name="verify-prenom" required><br><br>
+            <label for="verify-ine">Numéro INE :</label>
+            <input type="text" id="verify-ine" name="verify-ine" required><br><br>
+            <label for="wallet-address">Adresse Wallet:</label>
+            <input type="text" id="wallet-address" name="wallet-address" required><br><br>
+            <button type="submit">CLIQUEZ ICI POUR GENERER UN NFT</button>
+        </fieldset>
+    </form>
+
+    <script>
+        // Initialiser le scanner de code QR
+        var html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+
+        // Fonction appelée lors de la réussite du scan du QR code
+        function onScanSuccess(decodedText) {
+            console.log(`Code QR scanné: ${decodedText}`);
+            alert('Les informations sont correctes !');
+            document.getElementById('studentNFT-form').style.display = 'block';
+            document.getElementById('studentNFT-form').target = "_blank"; // Assure que le form s'ouvre dans un nouvel onglet
+        }
+    </script>
+</body>
+</html>
+
+
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: url("{% static 'images/form.jpg' %}") no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* En-tête */ 
+h1 { 
+    text-align: center; 
+    color: #343a40; 
+    margin-top: 20px; 
+}
+
+form button {
+    background-color: #28a745;
+    color: #ffffff;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+#mintButton {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    align-self: center; /* Center the button horizontally */
+}
+
+#mintButton:hover {
+    background-color: #0056b3;
+}
+
+#status {
+    text-align: center;
+    margin-top: auto; /* Pushes status to the bottom of the screen */
+    color: #6c757d;
+    font-size: 1.1em;
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+/* Media Queries pour réactivité */
+@media (max-width: 768px) {
+    form {
+        padding: 20px;
+    }
+
+    form button {
+        padding: 10px 15px;
+        font-size: 0.9em;
+    }
+
+    #mintButton {
+        padding: 10px 15px;
+        font-size: 0.9em;
+    }
+}
